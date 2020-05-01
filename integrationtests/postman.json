@@ -1,0 +1,418 @@
+{
+	"info": {
+		"_postman_id": "37b0d182-f349-4b7d-bd1c-ba57e064914e",
+		"name": "Serverless-AWS",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "POST /",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "0f677f2c-ff1d-4bb2-acf8-a97bcd20d392",
+						"exec": [
+							"const expectedSchema = {",
+							"    \"type\": \"object\",",
+							"    \"properties\": {",
+							"        \"name\": { \"type\": \"string\" },",
+							"        \"nickname\": { \"type\": \"string\" },",
+							"        \"title\": { \"type\": \"string\" },",
+							"        \"content\": { \"type\": \"string\" },",
+							"        \"comments\": { \"type\": \"array\" },",
+							"        \"_id\": { \"type\": \"string\" }",
+							"    },",
+							"    \"required\": [\"name\", \"nickname\", \"title\", \"content\",\"comments\",\"_id\" ]",
+							"};",
+							"",
+							"var jsonData = pm.response.json();",
+							"pm.globals.set(\"postId\", jsonData._id);",
+							"",
+							"pm.test(\"Status code is 200\", function () {",
+							"    pm.response.to.have.status(200);",
+							"});",
+							"",
+							"pm.test('Schema is valid', function() {",
+							"    pm.expect(tv4.validate(jsonData, expectedSchema)).to.be.true;",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"name": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n\t\"name\": \"Jack Nicholson\",\n\t\"nickname\": \"Nicky\",\n\t\"title\": \"My Joker was good too\",\n\t\"content\": \"Respect for Heath Ledger and Joaquin Phoenix\",\n\t\"comments\": []\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{baseUrl}}",
+					"host": [
+						"{{baseUrl}}"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "GET /",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "a236864f-6541-43f7-9ff6-9e96a66eac31",
+						"exec": [
+							"var jsonData = pm.response.json();",
+							"",
+							"pm.test(\"Status code is 200\", function () {",
+							"    pm.response.to.have.status(200);",
+							"});",
+							"",
+							"pm.test(\"Check if array is not empty\", function () {",
+							"    pm.expect(jsonData).to.be.an('array').that.is.not.empty;",
+							"});",
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{baseUrl}}",
+					"host": [
+						"{{baseUrl}}"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "GET /ID",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "050b3367-5bb9-4d01-a852-e72ba36bdae3",
+						"exec": [
+							"const expectedSchema = {",
+							"    \"type\": \"object\",",
+							"    \"properties\": {",
+							"        \"name\": { \"type\": \"string\" },",
+							"        \"nickname\": { \"type\": \"string\" },",
+							"        \"title\": { \"type\": \"string\" },",
+							"        \"content\": { \"type\": \"string\" },",
+							"        \"comments\": { \"type\": \"array\" },",
+							"        \"_id\": { \"type\": \"string\" }",
+							"    },",
+							"    \"required\": [\"name\", \"nickname\", \"title\", \"content\",\"comments\",\"_id\" ]",
+							"};",
+							"",
+							"var jsonData = pm.response.json();",
+							"",
+							"pm.test(\"Status code is 200\", function () {",
+							"    pm.response.to.have.status(200);",
+							"});",
+							"pm.test('Schema is valid', function() {",
+							"    pm.expect(tv4.validate(jsonData, expectedSchema)).to.be.true;",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{baseUrl}}{{postId}}",
+					"host": [
+						"{{baseUrl}}{{postId}}"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "PUT /ID",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "d4db3d85-6edc-48e4-95fb-baaa294aad05",
+						"exec": [
+							"pm.test(\"Status code is 200\", function () {",
+							"    pm.response.to.have.status(200);",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "PUT",
+				"header": [
+					{
+						"key": "Content-Type",
+						"name": "Content-Type",
+						"type": "text",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n\t\"name\": \"Jack Nicholson\",\n\t\"nickname\": \"Mr. John Joseph Nicholson\",\n\t\"title\": \"My Joker was good too\",\n\t\"content\": \"Respect for Heath Ledger and Joaquin Phoenix\",\n\t\"comments\": []\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{baseUrl}}{{postId}}",
+					"host": [
+						"{{baseUrl}}{{postId}}"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "GET /ID modified",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "c5f2b8d1-f973-40ad-9003-5cdd9d7cf5df",
+						"exec": [
+							"pm.test(\"Your test name\", function () {",
+							"    var jsonData = pm.response.json();",
+							"    pm.expect(jsonData.nickname).to.eql(\"Mr. John Joseph Nicholson\");",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{baseUrl}}{{postId}}",
+					"host": [
+						"{{baseUrl}}{{postId}}"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "POST /ID/comments",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "de69f9a2-d429-4863-93e3-172ba3911e24",
+						"exec": [
+							"var jsonData = pm.response.json();",
+							"pm.globals.set(\"commentId\", jsonData.comments[0]._id);",
+							"",
+							"pm.test(\"Status code is 200\", function () {",
+							"    pm.response.to.have.status(200);",
+							"});",
+							"",
+							"pm.test(\"Check if comments array is not empty\", function () {",
+							"    pm.expect(jsonData.comments).to.be.an('array').that.is.not.empty;",
+							"});",
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"name": "Content-Type",
+						"type": "text",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n\t\"nickname\": \"Random Internet Guy\",\n\t\"comment\": \"Here is Johnny!\",\n\t\"creationDate\": \"2019-11-26 10:15:55\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{baseUrl}}{{postId}}/comments/",
+					"host": [
+						"{{baseUrl}}{{postId}}"
+					],
+					"path": [
+						"comments",
+						""
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "DELETE /ID/comments/ID",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "7940fe3c-4ada-49a9-ac7d-325ba08ccd11",
+						"exec": [
+							"pm.test(\"Status code is 204\", function () {",
+							"    pm.response.to.have.status(204);",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "DELETE",
+				"header": [],
+				"url": {
+					"raw": "{{baseUrl}}{{postId}}/comments/{{commentId}}",
+					"host": [
+						"{{baseUrl}}{{postId}}"
+					],
+					"path": [
+						"comments",
+						"{{commentId}}"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "DELETE /ID",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "031edbe5-f706-4026-b9ce-0befe2e3c5b4",
+						"exec": [
+							"pm.test(\"Status code is 204\", function () {",
+							"    pm.response.to.have.status(204);",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "DELETE",
+				"header": [
+					{
+						"key": "Content-Type",
+						"name": "Content-Type",
+						"type": "text",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n\t\"name\": \"Jack Nicholson\",\n\t\"nickname\": \"Nicky\",\n\t\"title\": \"My Joker was good too\",\n\t\"content\": \"Respect for Heath Ledger and Joaquin Phoenix\",\n\t\"comments\": []\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{baseUrl}}{{postId}}",
+					"host": [
+						"{{baseUrl}}{{postId}}"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "GET /ID not found",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "fd0e5c68-7c56-4b85-90c8-421f126c5e8e",
+						"exec": [
+							"pm.test(\"Status code is 404\", function () {",
+							"    pm.response.to.have.status(404);",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{baseUrl}}{{postId}}",
+					"host": [
+						"{{baseUrl}}{{postId}}"
+					]
+				}
+			},
+			"response": []
+		}
+	],
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"id": "32faec14-c98a-44a6-8d95-7b629834924d",
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"id": "78fce602-023d-4560-9d70-e3c0ec17c1c6",
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		}
+	],
+	"variable": [
+		{
+			"id": "c1db7fc4-b109-4b51-a158-719eb2dbd67a",
+			"key": "baseUrl",
+			"value": "http://localhost:8080/\n",
+			"type": "string"
+		}
+	],
+	"protocolProfileBehavior": {}
+}
