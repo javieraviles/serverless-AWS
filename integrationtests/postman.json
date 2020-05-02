@@ -13,28 +13,8 @@
 					"script": {
 						"id": "0f677f2c-ff1d-4bb2-acf8-a97bcd20d392",
 						"exec": [
-							"const expectedSchema = {",
-							"    \"type\": \"object\",",
-							"    \"properties\": {",
-							"        \"name\": { \"type\": \"string\" },",
-							"        \"nickname\": { \"type\": \"string\" },",
-							"        \"title\": { \"type\": \"string\" },",
-							"        \"content\": { \"type\": \"string\" },",
-							"        \"comments\": { \"type\": \"array\" },",
-							"        \"_id\": { \"type\": \"string\" }",
-							"    },",
-							"    \"required\": [\"name\", \"nickname\", \"title\", \"content\",\"comments\",\"_id\" ]",
-							"};",
-							"",
-							"var jsonData = pm.response.json();",
-							"pm.globals.set(\"postId\", jsonData._id);",
-							"",
 							"pm.test(\"Status code is 200\", function () {",
 							"    pm.response.to.have.status(200);",
-							"});",
-							"",
-							"pm.test('Schema is valid', function() {",
-							"    pm.expect(tv4.validate(jsonData, expectedSchema)).to.be.true;",
 							"});"
 						],
 						"type": "text/javascript"
@@ -53,7 +33,7 @@
 				],
 				"body": {
 					"mode": "raw",
-					"raw": "{\n\t\"name\": \"Jack Nicholson\",\n\t\"nickname\": \"Nicky\",\n\t\"title\": \"My Joker was good too\",\n\t\"content\": \"Respect for Heath Ledger and Joaquin Phoenix\",\n\t\"comments\": []\n}",
+					"raw": "{\n\t\"name\": \"Jack Nicholson\",\n\t\"nickname\": \"Nicky\",\n\t\"title\": \"My Joker was good too\",\n\t\"content\": \"Respect for Heath Ledger and Joaquin Phoenix\",\n\t\"comments\": {}\n}",
 					"options": {
 						"raw": {
 							"language": "json"
@@ -77,15 +57,35 @@
 					"script": {
 						"id": "a236864f-6541-43f7-9ff6-9e96a66eac31",
 						"exec": [
+							"const expectedSchema = {",
+							"    \"type\": \"object\",",
+							"    \"properties\": {",
+							"        \"name\": { \"type\": \"string\" },",
+							"        \"nickname\": { \"type\": \"string\" },",
+							"        \"title\": { \"type\": \"string\" },",
+							"        \"content\": { \"type\": \"string\" },",
+							"        \"comments\": { \"type\": \"object\" },",
+							"        \"postid\": {\"type\": \"string\"}",
+							"    },",
+							"    \"required\": [\"name\", \"nickname\", \"title\", \"content\",\"comments\", \"postid\" ]",
+							"};",
+							"",
 							"var jsonData = pm.response.json();",
+							"pm.globals.set(\"postId\", jsonData.Items[0].postid);",
 							"",
 							"pm.test(\"Status code is 200\", function () {",
 							"    pm.response.to.have.status(200);",
 							"});",
 							"",
 							"pm.test(\"Check if array is not empty\", function () {",
-							"    pm.expect(jsonData).to.be.an('array').that.is.not.empty;",
+							"    pm.expect(jsonData.Items).to.be.an('array').that.is.not.empty;",
 							"});",
+							"",
+							"pm.test('Schema is valid', function() {",
+							"    pm.expect(tv4.validate(jsonData.Items[0], expectedSchema)).to.be.true;",
+							"});",
+							"",
+							"",
 							""
 						],
 						"type": "text/javascript"
@@ -119,10 +119,10 @@
 							"        \"nickname\": { \"type\": \"string\" },",
 							"        \"title\": { \"type\": \"string\" },",
 							"        \"content\": { \"type\": \"string\" },",
-							"        \"comments\": { \"type\": \"array\" },",
-							"        \"_id\": { \"type\": \"string\" }",
+							"        \"comments\": { \"type\": \"object\" },",
+							"        \"postid\": { \"type\": \"string\" }",
 							"    },",
-							"    \"required\": [\"name\", \"nickname\", \"title\", \"content\",\"comments\",\"_id\" ]",
+							"    \"required\": [\"name\", \"nickname\", \"title\", \"content\",\"comments\",\"postid\" ]",
 							"};",
 							"",
 							"var jsonData = pm.response.json();",
@@ -131,7 +131,7 @@
 							"    pm.response.to.have.status(200);",
 							"});",
 							"pm.test('Schema is valid', function() {",
-							"    pm.expect(tv4.validate(jsonData, expectedSchema)).to.be.true;",
+							"    pm.expect(tv4.validate(jsonData.Items[0], expectedSchema)).to.be.true;",
 							"});"
 						],
 						"type": "text/javascript"
@@ -178,7 +178,7 @@
 				],
 				"body": {
 					"mode": "raw",
-					"raw": "{\n\t\"name\": \"Jack Nicholson\",\n\t\"nickname\": \"Mr. John Joseph Nicholson\",\n\t\"title\": \"My Joker was good too\",\n\t\"content\": \"Respect for Heath Ledger and Joaquin Phoenix\",\n\t\"comments\": []\n}",
+					"raw": "{\n\t\"name\": \"Jack Nicholson\",\n\t\"nickname\": \"Mr. John Joseph Nicholson\",\n\t\"title\": \"My Joker was good too\",\n\t\"content\": \"Respect for Heath Ledger and Joaquin Phoenix\",\n\t\"comments\": {}\n}",
 					"options": {
 						"raw": {
 							"language": "json"
@@ -204,7 +204,7 @@
 						"exec": [
 							"pm.test(\"Your test name\", function () {",
 							"    var jsonData = pm.response.json();",
-							"    pm.expect(jsonData.nickname).to.eql(\"Mr. John Joseph Nicholson\");",
+							"    pm.expect(jsonData.Items[0].nickname).to.eql(\"Mr. John Joseph Nicholson\");",
 							"});"
 						],
 						"type": "text/javascript"
@@ -229,17 +229,17 @@
 				{
 					"listen": "test",
 					"script": {
-						"id": "de69f9a2-d429-4863-93e3-172ba3911e24",
+						"id": "ec46fd4e-3970-44a9-a8b0-9fa35b498859",
 						"exec": [
 							"var jsonData = pm.response.json();",
-							"pm.globals.set(\"commentId\", jsonData.comments[0]._id);",
+							"pm.globals.set(\"commentId\", Object.keys(jsonData.Attributes.comments));",
 							"",
 							"pm.test(\"Status code is 200\", function () {",
 							"    pm.response.to.have.status(200);",
 							"});",
 							"",
 							"pm.test(\"Check if comments array is not empty\", function () {",
-							"    pm.expect(jsonData.comments).to.be.an('array').that.is.not.empty;",
+							"    pm.expect(jsonData.Attributes.comments).to.be.not.empty;",
 							"});",
 							""
 						],
@@ -287,8 +287,8 @@
 					"script": {
 						"id": "7940fe3c-4ada-49a9-ac7d-325ba08ccd11",
 						"exec": [
-							"pm.test(\"Status code is 204\", function () {",
-							"    pm.response.to.have.status(204);",
+							"pm.test(\"Status code is 200\", function () {",
+							"    pm.response.to.have.status(200);",
 							"});"
 						],
 						"type": "text/javascript"
@@ -319,8 +319,8 @@
 					"script": {
 						"id": "031edbe5-f706-4026-b9ce-0befe2e3c5b4",
 						"exec": [
-							"pm.test(\"Status code is 204\", function () {",
-							"    pm.response.to.have.status(204);",
+							"pm.test(\"Status code is 200\", function () {",
+							"    pm.response.to.have.status(200);",
 							"});"
 						],
 						"type": "text/javascript"
@@ -346,34 +346,6 @@
 						}
 					}
 				},
-				"url": {
-					"raw": "{{baseUrl}}{{postId}}",
-					"host": [
-						"{{baseUrl}}{{postId}}"
-					]
-				}
-			},
-			"response": []
-		},
-		{
-			"name": "GET /ID not found",
-			"event": [
-				{
-					"listen": "test",
-					"script": {
-						"id": "fd0e5c68-7c56-4b85-90c8-421f126c5e8e",
-						"exec": [
-							"pm.test(\"Status code is 404\", function () {",
-							"    pm.response.to.have.status(404);",
-							"});"
-						],
-						"type": "text/javascript"
-					}
-				}
-			],
-			"request": {
-				"method": "GET",
-				"header": [],
 				"url": {
 					"raw": "{{baseUrl}}{{postId}}",
 					"host": [
@@ -408,9 +380,9 @@
 	],
 	"variable": [
 		{
-			"id": "c1db7fc4-b109-4b51-a158-719eb2dbd67a",
+			"id": "f0c94def-0ec7-4135-84bf-8891ce9bdefc",
 			"key": "baseUrl",
-			"value": "http://localhost:8080/\n",
+			"value": "https://4yg62fo87l.execute-api.us-east-1.amazonaws.com/Prod/posts/",
 			"type": "string"
 		}
 	],
