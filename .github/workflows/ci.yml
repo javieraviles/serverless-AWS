@@ -1,0 +1,20 @@
+name: CI
+
+on:
+  push:
+    branches:    
+      - master
+
+jobs:
+  integration_tests:
+    name: Run integration tests
+    runs-on: ubuntu-16.04
+    steps:
+    - uses: actions/checkout@master
+    - uses: actions/setup-node@v1
+      with:
+        node-version: '12.x'
+    - name: Install Newman
+      run: npm install -g newman
+    - name: Integration Tests
+      run: cd src && npm run test:integration

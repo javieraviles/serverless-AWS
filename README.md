@@ -14,6 +14,7 @@ Example REST API using the serverless stack from AWS: **Lambda, DynamoDB, SAM, A
     - [Post](#post)
     - [Comment](#comment)
   - [Integration Tests](#integration-tests)
+  - [Github Actions pipeline](#github-actions-pipeline)
 
 ## Available endpoints:
 | Method | Resource                             |
@@ -161,7 +162,7 @@ Properties:
 ```
 
 ## Integration Tests
-Find inside directory `integrationtests` a straightforward postman collection, including test assertions, testing every endpoint and a main application flow:
+Find inside directory `src/integrationtests` a straightforward postman collection, including test assertions, testing every endpoint and a main application flow:
 1. Create a Post
 2. Get all available Posts
 3. Get a specific Post checking structure
@@ -170,3 +171,24 @@ Find inside directory `integrationtests` a straightforward postman collection, i
 6. Add a Comment to the Post
 7. Delete the Comment
 8. Delete the Post
+
+To run them, you have basically two options:
+- Import the collection in Postman and run them manually
+- Install Newman `npm install -g newman` and execute `npm run test:integration`
+
+## Github Actions pipeline
+A very simple actions pipeline is provided in this project too. The file `.github/workflows/ci.yml` will create a pipeline which will trigger the postman collection automatically using newman against the production url for the api:
+```
+integration_tests:
+    name: Run integration tests
+    runs-on: ubuntu-16.04
+    steps:
+    - uses: actions/checkout@master
+    - uses: actions/setup-node@v1
+      with:
+        node-version: '12.x'
+    - name: Install Newman
+      run: npm install -g newman
+    - name: Integration Tests
+      run: cd src && npm run test:integration
+```
