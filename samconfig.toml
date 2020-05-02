@@ -1,0 +1,10 @@
+version = 0.1
+[default]
+[default.deploy]
+[default.deploy.parameters]
+stack_name = "serverless-aws"
+s3_bucket = "s3.cloudapps.codeurjc"
+s3_prefix = "serverless-aws"
+region = "us-east-1"
+capabilities = "CAPABILITY_IAM"
+

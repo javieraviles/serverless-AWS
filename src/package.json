@@ -1,0 +1,11 @@
+{
+  "name": "serverless-aws",
+  "version": "1.0.0",
+  "description": "Serverless DynamoDB API in AWS using lambdas",
+  "author": "Javier Aviles",
+  "license": "Apache-2.0",
+  "dependencies": {
+    "aws-sdk": "^2.564.0",
+    "uuid": "^3.3.3"
+  }
+}

@@ -1,0 +1,81 @@
+Transform: 'AWS::Serverless-2016-10-31'
+Resources:
+    postsFunction:
+        Type: 'AWS::Serverless::Function'
+        Properties:
+            Runtime: nodejs12.x
+            Handler: index.postsHandler
+            CodeUri: ./src
+            Events:
+                lambdaGetAllPosts:
+                    Type: Api
+                    Properties:
+                        Path: /posts
+                        Method: GET
+                lambdaGetPost:
+                    Type: Api
+                    Properties:
+                        Path: /posts/{postid}
+                        Method: GET
+                lambdaAddPost:
+                    Type: Api
+                    Properties:
+                        Path: /posts
+                        Method: POST
+                lambdaAddComment:
+                    Type: Api
+                    Properties:
+                        Path: /posts/{postid}/comments
+                        Method: POST
+                lambdaUpdatePost:
+                    Type: Api
+                    Properties:
+                        Path: /posts/{postid}
+                        Method: PUT
+                lambdaDeletePost:
+                    Type: Api
+                    Properties:
+                        Path: /posts/{postid}
+                        Method: DELETE
+                lambdaDeleteComment:
+                    Type: Api
+                    Properties:
+                        Path: /posts/{postid}/comments/{commentid}
+                        Method: DELETE
+            Policies:
+                -   Version: '2012-10-17'
+                    Statement: 
+                        -   Effect: Allow
+                            Action:
+                                -   'dynamodb:Scan'
+                                -   'dynamodb:Query'
+                                -   'dynamodb:DeleteItem'
+                                -   'dynamodb:GetItem'
+                                -   'dynamodb:PutItem'
+                                -   'dynamodb:UpdateItem'
+                            Resource:
+                                'Fn::Join':
+                                    -   ''
+                                    -   -   'arn:aws:dynamodb:'
+                                        -   Ref: 'AWS::Region'
+                                        -   ':'
+                                        -   Ref: 'AWS::AccountId'
+                                        -   ':table/posts'
+    
+    postsTable:
+        Type: 'AWS::DynamoDB::Table'
+        Properties:
+            TableName: posts
+            AttributeDefinitions:
+                -   AttributeName: postid
+                    AttributeType: S
+            KeySchema:
+                -   AttributeName: postid
+                    KeyType: HASH
+            ProvisionedThroughput:
+                ReadCapacityUnits: 5
+                WriteCapacityUnits: 5
+Outputs:
+  PublicApi:
+    Description: "API Gateway endpoint URL for Prod stage for Posts handler function"
+    Value: !Sub "https://${ServerlessRestApi}.execute-api.${AWS::Region}.amazonaws.com/Prod/posts/"
