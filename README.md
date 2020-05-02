@@ -29,9 +29,9 @@ Example REST API using the serverless stack from AWS:
 
 ## Prerequisites
 In order to deploy this API into you AWS environment, you will first need:
-    - AWS account (educate, free tier or normal)
-    - [SAM cli installed](https://docs.aws.amazon.com/serverless-application-model/latest/developerguide/serverless-sam-cli-install.html)
-    - [AWS credentials configured](https://docs.aws.amazon.com/sdk-for-java/v1/developer-guide/setup-credentials.html)
+- AWS account (educate, free tier or normal)
+- [SAM cli installed](https://docs.aws.amazon.com/serverless-application-model/latest/developerguide/serverless-sam-cli-install.html)
+- [AWS credentials configured](https://docs.aws.amazon.com/sdk-for-java/v1/developer-guide/setup-credentials.html)
 
 ## How to deploy the API
 ### SAM configuration
@@ -88,11 +88,11 @@ Once deployed, feel free to use the provided **Postman** collection against the 
 
 ## Integration Tests
 Find inside directory `integrationtests` a straightforward postman collection, including test assertions, testing every endpoint and a main application flow:
-    1. Create a Post
-    2. Get all available Posts
-    3. Get a specific Post checking structure
-    4. Modify the Post's nickname
-    5. Get it again to check whether it was modified correctly
-    6. Add a Comment to the Post
-    7. Delete the Comment
-    8. Delete the Post
+1. Create a Post
+2. Get all available Posts
+3. Get a specific Post checking structure
+4. Modify the Post's nickname
+5. Get it again to check whether it was modified correctly
+6. Add a Comment to the Post
+7. Delete the Comment
+8. Delete the Post
