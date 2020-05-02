@@ -1,9 +1,5 @@
 # serverless-AWS
-Example REST API using the serverless stack from AWS:
-    - Lambda
-    - DynamoDB
-    - SAM
-    - API Gateway
+Example REST API using the serverless stack from AWS: **Lambda, DynamoDB, SAM, API Gateway**
 
 - [serverless-AWS](#serverless-aws)
   - [Available endpoints:](#available-endpoints)
@@ -11,6 +7,9 @@ Example REST API using the serverless stack from AWS:
   - [How to deploy the API](#how-to-deploy-the-api)
     - [SAM configuration](#sam-configuration)
     - [SAM deploy](#sam-deploy)
+  - [Short code overview](#short-code-overview)
+    - [dbManager.js](#dbmanagerjs)
+    - [Template.yaml](#templateyaml)
   - [Entities](#entities)
     - [Post](#post)
     - [Comment](#comment)
@@ -28,7 +27,7 @@ Example REST API using the serverless stack from AWS:
 | DELETE | /posts/{postId}/comments/{commentId} |
 
 ## Prerequisites
-In order to deploy this API into you AWS environment, you will first need:
+In order to deploy this lambda application into you AWS environment, you will first need:
 - AWS account (educate, free tier or normal)
 - [SAM cli installed](https://docs.aws.amazon.com/serverless-application-model/latest/developerguide/serverless-sam-cli-install.html)
 - [AWS credentials configured](https://docs.aws.amazon.com/sdk-for-java/v1/developer-guide/setup-credentials.html)
@@ -64,6 +63,81 @@ Value: !Sub "https://${ServerlessRestApi}.execute-api.${AWS::Region}.amazonaws.c
 ```
 
 Once deployed, feel free to use the provided **Postman** collection against the API.
+
+## Short code overview
+The key parts are `src/dbManager.js` and `template.yaml`.
+### dbManager.js
+This file first imports the node AWS sdk `const AWS = require('aws-sdk')` and creates a Dynamo DocumentClient `const docClient = new AWS.DynamoDB.DocumentClient()` to manage documents against the database on each lambda. Now retrieving a collection from a lambda would be as easy as:
+
+```
+const params = {
+    TableName: 'posts'
+};
+
+return docClient.scan(params).promise();
+```
+
+A more complex example would be creating a comment within a Post comments collection: 
+```
+const params = {
+    TableName: 'posts',
+    Key: {
+        "postid": postid
+    },
+    UpdateExpression: 'set comments.#commentid = :comment',
+    ExpressionAttributeNames: {
+        "#commentid": commentid
+    },
+    ExpressionAttributeValues: {
+        ":comment": comment,
+    },
+    ReturnValues: "UPDATED_NEW"
+};
+return docClient.update(params).promise();
+```
+
+Notice as well the parameter `Returnalues` where what the API will return after the action is carried out
+
+### Template.yaml
+Defines a lambda function defining the events that will trigger this function, such as this piece of code:
+```
+lambdaGetPost:
+  Type: Api
+  Properties:
+      Path: /posts/{postid}
+      Method: GET
+```
+Will make a GET to the resource `/posts/{postid}` trigger our lambda application.
+
+This template also defines one or more policies that this function needs. They will be appended to the default role for this function. This way:
+```
+Effect: Allow
+Action:
+    -   'dynamodb:Scan'
+    -   'dynamodb:Query'
+    -   'dynamodb:DeleteItem'
+    -   'dynamodb:GetItem'
+    -   'dynamodb:PutItem'
+    -   'dynamodb:UpdateItem'
+```
+
+All these actions will be allowed over DynamoDB.
+
+The second part of the yaml file, defines a **DynamoDB** table:
+```
+Type: 'AWS::DynamoDB::Table'
+Properties:
+    TableName: posts
+    AttributeDefinitions:
+        -   AttributeName: postid
+            AttributeType: S
+    KeySchema:
+        -   AttributeName: postid
+            KeyType: HASH
+    ProvisionedThroughput:
+        ReadCapacityUnits: 5
+        WriteCapacityUnits: 5
+```
 
 ## Entities
 ### Post
